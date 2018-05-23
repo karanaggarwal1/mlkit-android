@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "811249724840",
+    "firebase_url": "https://mlkit-object-recognition.firebaseio.com",
+    "project_id": "mlkit-object-recognition",
+    "storage_bucket": "mlkit-object-recognition.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:811249724840:android:1745af4c9c380512",
+        "android_client_info": {
+          "package_name": "com.google.firebase.codelab.mlkit_custommodel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "811249724840-r667b6ljkhliaou2frqnql5hrvpn2ncj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaoS0Ww8jyoLMUc647MaikNyIebCE4vg8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
