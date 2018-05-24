@@ -90,18 +90,105 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void runTextRecognition() {
         // TODO: Add your code here to run on-device text recognition.
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(mSelectedImage);
+        FirebaseVisionTextDetector detector = FirebaseVision.getInstance()
+                .getVisionTextDetector();
+        mButton.setEnabled(false);
+        detector.detectInImage(image)
+                .addOnSuccessListener(
+                        new OnSuccessListener<FirebaseVisionText>() {
+                            @Override
+                            public void onSuccess(FirebaseVisionText texts) {
+                                mButton.setEnabled(true);
+                                processTextRecognitionResult(texts);
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Task failed with an exception
+                                mButton.setEnabled(true);
+                                e.printStackTrace();
+                            }
+                        });
     }
 
     private void processTextRecognitionResult(FirebaseVisionText texts) {
         // TODO: Add your code here to process the on-device text recognition results.
+        List<FirebaseVisionText.Block> blocks = texts.getBlocks();
+        if (blocks.size() == 0) {
+            showToast("No text found");
+            return;
+        }
+        mGraphicOverlay.clear();
+        for (int i = 0; i < blocks.size(); i++) {
+            List<FirebaseVisionText.Line> lines = blocks.get(i).getLines();
+            for (int j = 0; j < lines.size(); j++) {
+                List<FirebaseVisionText.Element> elements = lines.get(j).getElements();
+                for (int k = 0; k < elements.size(); k++) {
+                    Graphic textGraphic = new TextGraphic(mGraphicOverlay, elements.get(k));
+                    mGraphicOverlay.add(textGraphic);
+
+                }
+            }
+        }
     }
 
     private void runCloudTextRecognition() {
         // TODO: Add your code here to run cloud text recognition.
+        FirebaseVisionCloudDetectorOptions options =
+                new FirebaseVisionCloudDetectorOptions.Builder()
+                        .setModelType(FirebaseVisionCloudDetectorOptions.LATEST_MODEL)
+                        .setMaxResults(15)
+                        .build();
+        mCloudButton.setEnabled(false);
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(mSelectedImage);
+        FirebaseVisionCloudDocumentTextDetector detector = FirebaseVision.getInstance()
+                .getVisionCloudDocumentTextDetector(options);
+        detector.detectInImage(image)
+                .addOnSuccessListener(
+                        new OnSuccessListener<FirebaseVisionCloudText>() {
+                            @Override
+                            public void onSuccess(FirebaseVisionCloudText texts) {
+                                mCloudButton.setEnabled(true);
+                                processCloudTextRecognitionResult(texts);
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Task failed with an exception
+                                mCloudButton.setEnabled(true);
+                                e.printStackTrace();
+                            }
+                        });
     }
 
     private void processCloudTextRecognitionResult(FirebaseVisionCloudText text) {
         // TODO: Add your code here to process the cloud text recognition results.
+        if (text == null) {
+            showToast("No text found");
+            return;
+        }
+        mGraphicOverlay.clear();
+        List<FirebaseVisionCloudText.Page> pages = text.getPages();
+        for (int i = 0; i < pages.size(); i++) {
+            FirebaseVisionCloudText.Page page = pages.get(i);
+            List<FirebaseVisionCloudText.Block> blocks = page.getBlocks();
+            for (int j = 0; j < blocks.size(); j++) {
+                List<FirebaseVisionCloudText.Paragraph> paragraphs = blocks.get(j).getParagraphs();
+                for (int k = 0; k < paragraphs.size(); k++) {
+                    FirebaseVisionCloudText.Paragraph paragraph = paragraphs.get(k);
+                    List<FirebaseVisionCloudText.Word> words = paragraph.getWords();
+                    for (int l = 0; l < words.size(); l++) {
+                        Graphic cloudTextGraphic = new CloudTextGraphic(mGraphicOverlay, words.get(l));
+                        mGraphicOverlay.add(cloudTextGraphic);
+                    }
+                }
+            }
+        }
     }
 
     private void showToast(String message) {
